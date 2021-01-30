@@ -25,9 +25,17 @@ class stack {
     return _container.emplace_back(std::forward<args_t>(args)...);
   }
 
-  T pop() { return _container.pop_back(); }
+  T pop() {
+    T ret = _container.back();
+    _container.pop_back();
+    return ret;
+  }
 
-  T top() const { return _container.back(); }
+  T top() const {
+    T ret = _container.front();
+    _container.pop_front();
+    return ret;
+  }
 
   std::size_t size() const { return _container.size(); }
 

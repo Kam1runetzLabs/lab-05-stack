@@ -31,7 +31,7 @@ find_package(GTest CONFIG REQUIRED)
 add_library(${PROJECT_NAME} STATIC
   # enum your files and delete this comment
   ${CMAKE_CURRENT_SOURCE_DIR}/sources/source.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR} include/unrolled_list.hpp)
+  ${CMAKE_CURRENT_SOURCE_DIR} include/unrolled_list.hpp include/node_array.hpp)
 
 add_executable(demo
   ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp

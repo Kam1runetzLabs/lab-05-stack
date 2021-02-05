@@ -3,9 +3,9 @@
 #ifndef INCLUDE_HEADER_HPP_
 #define INCLUDE_HEADER_HPP_
 
-#include <unrolled_list.hpp>
+#include <list>
 
-template <typename T, typename Container = unrolled_list<T>>
+template <typename T, typename Container = std::list<T>>
 class stack {
  public:
   stack() : _container(){};
@@ -25,23 +25,22 @@ class stack {
     return _container.emplace_back(std::forward<args_t>(args)...);
   }
 
-  T pop() {
+  T pop() noexcept {
     T ret = _container.back();
     _container.pop_back();
     return ret;
   }
 
-  T top() const {
-    T ret = _container.front();
-    _container.pop_front();
+  T top() const noexcept {
+    T ret = _container.back();
     return ret;
   }
 
-  std::size_t size() const { return _container.size(); }
+  std::size_t size() const noexcept { return _container.size(); }
 
-  bool empty() const { return _container.empty(); }
+  bool empty() const noexcept { return _container.empty(); }
 
-  void clear() { _container.clear(); }
+  void clear() noexcept { _container.clear(); }
 
  private:
   Container _container;

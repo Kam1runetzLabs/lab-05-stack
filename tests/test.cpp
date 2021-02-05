@@ -19,17 +19,8 @@ class test {
 
 TEST(Example, EmptyTest) {
   node_array<int> arr(10);
-  for (int i = 0; i < 10; ++i) {
-    arr.push_front(i);
-  }
-  for (int i = 0; i < 10; ++i) {
-    std::cout << arr[i] << " ";
-  }
-  arr.pop_back();
-  std::cout << std::endl;
-  arr.pop_front();
-  for (std::size_t i = 0; i < arr.size(); ++i) {
-    std::cout << arr[i] << " ";
-  }
+  arr.insert(arr.cbegin(), 2);
+  for (int & it : arr)
+    std::cout << it << std::endl;
   EXPECT_TRUE(true);
 }

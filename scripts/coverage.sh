@@ -15,4 +15,4 @@ cmake --build _builds
 cmake --build _builds --target stack_test
 cmake --build _builds --target list_test
 cmake --build _builds --target gcov
-gcovr -r  .
+gcovr -r .

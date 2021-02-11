@@ -1,7 +1,7 @@
-// Copyright 2021 Your Name <your_email>
+// Copyright 2021 Kam1runetzLabs <notsoserious2017@gmail.com>
 
-#ifndef INCLUDE_HEADER_HPP_
-#define INCLUDE_HEADER_HPP_
+#ifndef INCLUDE_STACK_HPP_
+#define INCLUDE_STACK_HPP_
 
 #include <list.hpp>
 
@@ -43,4 +43,4 @@ class stack {
   Container _container;
 };
 
-#endif  // INCLUDE_HEADER_HPP_
+#endif  // INCLUDE_STACK_HPP_

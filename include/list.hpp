@@ -49,7 +49,7 @@ class list {
   }
 
   T &front() noexcept { return *begin(); }
-  T &back() noexcept { return *(--end()); }
+  T &back() noexcept { return *(iterator(_tail)); }
 
   void insert(iterator position, const T &value) {
     auto new_node = new _node(value);
@@ -104,7 +104,7 @@ class list {
   }
 
   std::size_t size() const noexcept { return _size; }
-  bool empty() const noexcept { return !!_size; }
+  bool empty() const noexcept { return !_size; }
 
   iterator begin() noexcept { return iterator(_head); }
   iterator end() noexcept {
@@ -141,7 +141,7 @@ class list {
     _node *prev;
   };
 
-  inline void _insert_node(iterator position, _node *new_node) {
+  inline void _insert_node(iterator &position, _node *new_node) {
     assert(position._pointer != nullptr || position == end());
     ++_size;
     if (position == begin()) {
@@ -155,8 +155,9 @@ class list {
       _tail = new_node;
       _head = !_head ? _tail : _head;
     } else {
-      position._pointer->prev = new_node;
+      new_node->prev = position._pointer->prev;
       new_node->next = position._pointer;
+      new_node->prev->next = new_node;
       position._pointer = new_node;
     }
   }
@@ -194,25 +195,10 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
     return *this;
   }
 
-  //  ///@notsafe
-  //  list_iterator operator+(list_iterator &other) noexcept {
-  //  }
-
   ///@notsafe
   list_iterator operator+(std::size_t number) noexcept {
     auto res = *this;
     for (std::size_t i = 0; i != number; ++i) ++res;
-    return res;
-  }
-
-  //  ///@notsafe
-  //  list_iterator &operator-(list_iterator &other) noexcept {
-  //  }
-
-  ///@notsafe
-  list_iterator &operator-(std::size_t number) noexcept {
-    auto res = *this;
-    for (std::size_t i = 0; i != number; ++i) --res;
     return res;
   }
 

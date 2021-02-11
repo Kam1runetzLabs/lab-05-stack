@@ -68,26 +68,10 @@ class list {
 
   void push_front(T &&value) { emplace_front(std::move(value)); }
 
-  void push_front(const T &value) {
-    //    ++_size;
-    //    auto tmp = new _node(value);
-    //    tmp->next = _head;
-    //    _head->prev = tmp;
-    //    _head = tmp;
-    //    if (!_tail) _tail = _head;
-    insert(begin(), value);
-  }
+  void push_front(const T &value) { insert(begin(), value); }
 
   void push_back(T &&value) { emplace_back(std::move(value)); }
-  void push_back(const T &value) {
-    //    ++_size;
-    //    auto tmp = new _node(value);
-    //    tmp->prev = _tail;
-    //    if (_tail) _tail->next = tmp;
-    //    _tail = tmp;
-    //    if (!_head) _head = _tail;
-    insert(end(), value);
-  }
+  void push_back(const T &value) { insert(end(), value); }
 
   void pop_back() noexcept {
     assert(_tail != nullptr);
@@ -111,22 +95,11 @@ class list {
 
   _ARGS_TEMPL(args_t)
   void emplace_back(args_t &&...args) {
-    //    ++_size;
-    //    auto tmp = new _node(std::forward<args_t>(args)...);
-    //    tmp->prev = _tail;
-    //    if (_tail) _tail->next = tmp;
-    //    _tail = tmp;
-    //    if (!_head) _head = _tail;
     emplace(end(), std::forward<args_t>(args)...);
   }
 
   _ARGS_TEMPL(args_t)
   void emplace_front(args_t &&...args) {
-    //    ++_size;
-    //    auto tmp = new _node(std::forward<args_t>(args)...);
-    //    tmp->next = _head;
-    //    _head = tmp;
-    //    if (!_tail) _tail = _head;
     emplace(begin(), std::forward<args_t>(args)...);
   }
 
@@ -221,12 +194,9 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
     return *this;
   }
 
-  ///@notsafe
-  list_iterator operator+(list_iterator &other) noexcept {
-    auto res = *this;
-    while (res != other) ++res;
-    return res;
-  }
+  //  ///@notsafe
+  //  list_iterator operator+(list_iterator &other) noexcept {
+  //  }
 
   ///@notsafe
   list_iterator operator+(std::size_t number) noexcept {
@@ -235,8 +205,16 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
     return res;
   }
 
+  //  ///@notsafe
+  //  list_iterator &operator-(list_iterator &other) noexcept {
+  //  }
+
   ///@notsafe
-  //  list_iterator &operator-(list_iterator &other) noexcept {}
+  list_iterator &operator-(std::size_t number) noexcept {
+    auto res = *this;
+    for (std::size_t i = 0; i != number; ++i) --res;
+    return res;
+  }
 
  private:
   explicit list_iterator(typename list<T>::_node *ptr) noexcept

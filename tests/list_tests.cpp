@@ -33,16 +33,10 @@ TEST(DefaultMethodsTest, DefaultConstructor) {
 
 TEST(DefaultMethodsTest, MovingConstructor) {
   EXPECT_TRUE(std::is_move_constructible<list<int>>::value);
-  // todo test
 }
 
 TEST(DefaultMethodsTest, MovingAssign) {
   EXPECT_TRUE(std::is_move_assignable<list<int>>::value);
-  // todo test
-}
-
-TEST(DefaultMethodsTest, Destructor) {
-  // todo test
 }
 
 TEST(InsertMethodsTest, PushBackMethodTest_lvalue) {
@@ -137,4 +131,15 @@ TEST(MiscTesting, FrontAndBackMethods) {
   for (int i = 0; i != 10; ++i) lst.push_back(i);
   EXPECT_EQ(lst.front(), 0);
   EXPECT_EQ(lst.back(), 9);
+}
+
+TEST(MiscTesting, ClearMethod) {
+  list<int> lst;
+  for (int i = 0; i != 10; ++i) lst.push_back(i);
+  EXPECT_EQ(lst.size(), 10);
+  EXPECT_FALSE(lst.empty());
+
+  lst.clear();
+  EXPECT_EQ(lst.size(), 0);
+  EXPECT_TRUE(lst.empty());
 }

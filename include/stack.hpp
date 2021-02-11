@@ -22,6 +22,8 @@ class stack {
     _container = std::move(other._container);
   }
 
+  void push(const T &value) { _container.push_back(value); }
+
   void push(T &&value) { _container.push_back(std::move(value)); }
 
   template <typename... args_t>
@@ -31,7 +33,7 @@ class stack {
 
   void pop() noexcept { _container.pop_back(); }
 
-  T &top() const noexcept { return _container.back(); }
+  T &top()  noexcept { return _container.back(); }
 
   std::size_t size() const noexcept { return _container.size(); }
 

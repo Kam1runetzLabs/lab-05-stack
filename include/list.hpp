@@ -45,40 +45,49 @@ class list {
 
   T &operator[](std::size_t index) noexcept {
     assert(index < _size);
-    auto tmp = _head;
-    for (std::size_t i = 0; i != index; ++i) tmp = tmp->next;
-    return tmp->value;
+    return *(begin() + index);
   }
 
   T &front() noexcept { return *begin(); }
   T &back() noexcept { return *(--end()); }
 
+  void insert(iterator position, const T &value) {
+    auto new_node = new _node(value);
+    _insert_node(position, new_node);
+  }
+
+  _ARGS_TEMPL(args_t)
+  void emplace(iterator position, args_t &&...args) {
+    auto new_node = new _node(std::forward<args_t>(args)...);
+    _insert_node(position, new_node);
+  }
+
+  void insert(iterator position, T &&value) {
+    emplace(position, std::move(value));
+  }
+
   void push_front(T &&value) { emplace_front(std::move(value)); }
 
   void push_front(const T &value) {
-    ++_size;
-    auto tmp = new _node(value);
-    tmp->next = _head;
-    _head = tmp;
-    if (!_tail) _tail = _head;
+    //    ++_size;
+    //    auto tmp = new _node(value);
+    //    tmp->next = _head;
+    //    _head->prev = tmp;
+    //    _head = tmp;
+    //    if (!_tail) _tail = _head;
+    insert(begin(), value);
   }
 
   void push_back(T &&value) { emplace_back(std::move(value)); }
   void push_back(const T &value) {
-    if (!_size) _head = _tail;
-    ++_size;
-    auto tmp = new _node(value);
-    tmp->prev = _tail;
-    if (_tail) _tail->next = tmp;
-    _tail = tmp;
-    if (!_head) _head = _tail;
+    //    ++_size;
+    //    auto tmp = new _node(value);
+    //    tmp->prev = _tail;
+    //    if (_tail) _tail->next = tmp;
+    //    _tail = tmp;
+    //    if (!_head) _head = _tail;
+    insert(end(), value);
   }
-
-  //  void insert(iterator position, const T &value);
-
-  //  void insert(iterator position, T &&value) {
-  //    emplace(position, std::move(value));
-  //  }
 
   void pop_back() noexcept {
     assert(_tail != nullptr);
@@ -102,25 +111,24 @@ class list {
 
   _ARGS_TEMPL(args_t)
   void emplace_back(args_t &&...args) {
-    ++_size;
-    auto tmp = new _node(std::forward<args_t>(args)...);
-    tmp->prev = _tail;
-    if (_tail) _tail->next = tmp;
-    _tail = tmp;
-    if (!_head) _head = _tail;
+    //    ++_size;
+    //    auto tmp = new _node(std::forward<args_t>(args)...);
+    //    tmp->prev = _tail;
+    //    if (_tail) _tail->next = tmp;
+    //    _tail = tmp;
+    //    if (!_head) _head = _tail;
+    emplace(end(), std::forward<args_t>(args)...);
   }
 
   _ARGS_TEMPL(args_t)
   void emplace_front(args_t &&...args) {
-    ++_size;
-    auto tmp = new _node(std::forward<args_t>(args)...);
-    tmp->next = _head;
-    _head = tmp;
-    if (!_tail) _tail = _head;
+    //    ++_size;
+    //    auto tmp = new _node(std::forward<args_t>(args)...);
+    //    tmp->next = _head;
+    //    _head = tmp;
+    //    if (!_tail) _tail = _head;
+    emplace(begin(), std::forward<args_t>(args)...);
   }
-
-  //  _ARGS_TEMPL(args_t)
-  //  void emplace(iterator position, args_t &&...args);
 
   std::size_t size() const noexcept { return _size; }
   bool empty() const noexcept { return !!_size; }
@@ -160,6 +168,26 @@ class list {
     _node *prev;
   };
 
+  inline void _insert_node(iterator position, _node *new_node) {
+    assert(position._pointer != nullptr || position == end());
+    ++_size;
+    if (position == begin()) {
+      new_node->next = _head;
+      if (_head) _head->prev = new_node;
+      _head = new_node;
+      _tail = !_tail ? _head : _tail;
+    } else if (position == end()) {
+      new_node->prev = _tail;
+      if (_tail) _tail->next = new_node;
+      _tail = new_node;
+      _head = !_head ? _tail : _head;
+    } else {
+      position._pointer->prev = new_node;
+      new_node->next = position._pointer;
+      position._pointer = new_node;
+    }
+  }
+
   _node *_head;
   _node *_tail;
 
@@ -177,18 +205,38 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
   bool operator==(const list_iterator &other) const noexcept {
     return _pointer == other._pointer;
   }
+
   bool operator!=(const list_iterator &other) const noexcept {
     return _pointer != other._pointer;
   }
+
   T &operator*() const noexcept { return _pointer->value; }
   list_iterator &operator++() noexcept {
     _pointer = _pointer->next;
     return *this;
   }
+
   list_iterator &operator--() noexcept {
     _pointer = _pointer->prev;
     return *this;
   }
+
+  ///@notsafe
+  list_iterator operator+(list_iterator &other) noexcept {
+    auto res = *this;
+    while (res != other) ++res;
+    return res;
+  }
+
+  ///@notsafe
+  list_iterator operator+(std::size_t number) noexcept {
+    auto res = *this;
+    for (std::size_t i = 0; i != number; ++i) ++res;
+    return res;
+  }
+
+  ///@notsafe
+  //  list_iterator &operator-(list_iterator &other) noexcept {}
 
  private:
   explicit list_iterator(typename list<T>::_node *ptr) noexcept

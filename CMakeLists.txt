@@ -45,12 +45,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(demo ${PROJECT_NAME})
 
 if (BUILD_TESTS)
-    add_executable(tests
-            ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.cpp
-            )
-    target_link_libraries(tests ${PROJECT_NAME} GTest::gtest_main)
+    add_executable(list_tests
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/stack_tests.cpp
+            tests/list_tests.cpp)
+    add_executable(stack_tests
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/stack_tests.cpp
+            tests/stack_tests.cpp)
+    target_link_libraries(list_tests ${PROJECT_NAME} GTest::gtest_main)
+    target_link_libraries(stack_tests ${PROJECT_NAME} GTest::gtest_main)
     enable_testing()
-    add_test(NAME unit_tests COMMAND tests)
+    add_test(NAME unit_stack_tests COMMAND stack_tests)
+    add_test(NAME unit_list_tests COMMAND list_tests)
 endif ()
 
 if (BUILD_COVERAGE)
@@ -70,7 +75,6 @@ if (BUILD_DOCS)
     find_package(Doxygen)
     doxygen_add_docs(docs include)
     install(DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}/man DESTINATION share)
-    # add_dependencies(install docs) need to call target docs before install or package
 endif ()
 
 include(CPackConfig.cmake)

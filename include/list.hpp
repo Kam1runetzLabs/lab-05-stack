@@ -1,9 +1,7 @@
-//
-// Created by w1ckedente on 30.01.2021.
-//
+// Copyright 2021 Kam1runetzLabs <notsoserious2017@gmail.com>
 
-#ifndef STACK_LIST_HPP
-#define STACK_LIST_HPP
+#ifndef INCLUDE_LIST_HPP_
+#define INCLUDE_LIST_HPP_
 
 #define _ARGS_TEMPL(args_type_name) template <typename... args_type_name>
 
@@ -22,12 +20,15 @@ class list {
   typedef list_iterator<T> iterator;
 
   list() : _head(nullptr), _tail(nullptr), _size(0){};
+
   list(const list &) = delete;
+
   list(list &&other) noexcept {
     _head = std::move(other._head);
     _tail = std::move(other._tail);
     _size = std::move(other._size);
   }
+
   ~list() {
     if (_head) clear();
   }
@@ -42,32 +43,42 @@ class list {
     return *this;
   }
 
-  T &operator[](std::size_t index) noexcept { assert(index < _size); }
+  T &operator[](std::size_t index) noexcept {
+    assert(index < _size);
+    auto tmp = _head;
+    for (std::size_t i = 0; i != index; ++i) tmp = tmp->next;
+    return tmp->value;
+  }
 
   T &front() noexcept { return *begin(); }
   T &back() noexcept { return *(--end()); }
 
   void push_front(T &&value) { emplace_front(std::move(value)); }
 
-  void push_front(const T &value);
+  void push_front(const T &value) {
+    ++_size;
+    auto tmp = new _node(value);
+    tmp->next = _head;
+    _head = tmp;
+    if (!_tail) _tail = _head;
+  }
 
   void push_back(T &&value) { emplace_back(std::move(value)); }
   void push_back(const T &value) {
+    if (!_size) _head = _tail;
     ++_size;
-    auto tmp = new _node;
+    auto tmp = new _node(value);
     tmp->prev = _tail;
-    tmp->next = nullptr;
-    tmp->value = value;
     if (_tail) _tail->next = tmp;
     _tail = tmp;
+    if (!_head) _head = _tail;
   }
 
-  void insert(iterator position, const T &value);
-  void insert(iterator position, T &&value) {
-    emplace(position, std::move(value));
-  }
+  //  void insert(iterator position, const T &value);
 
-  // todo check destructor of T
+  //  void insert(iterator position, T &&value) {
+  //    emplace(position, std::move(value));
+  //  }
 
   void pop_back() noexcept {
     assert(_tail != nullptr);
@@ -75,6 +86,7 @@ class list {
     auto tmp = _tail;
     _tail = _tail->prev;
     _tail->next = nullptr;
+    if (std::is_destructible<T>::value) tmp->value.~T();
     delete tmp;
   }
 
@@ -84,17 +96,31 @@ class list {
     auto tmp = _head;
     _head = _head->next;
     _head->prev = nullptr;
+    if (std::is_destructible<T>::value) tmp->value.~T();
     delete tmp;
   }
 
   _ARGS_TEMPL(args_t)
-  void emplace_back(args_t &&...args);
+  void emplace_back(args_t &&...args) {
+    ++_size;
+    auto tmp = new _node(std::forward<args_t>(args)...);
+    tmp->prev = _tail;
+    if (_tail) _tail->next = tmp;
+    _tail = tmp;
+    if (!_head) _head = _tail;
+  }
 
   _ARGS_TEMPL(args_t)
-  void emplace_front(args_t &&...args);
+  void emplace_front(args_t &&...args) {
+    ++_size;
+    auto tmp = new _node(std::forward<args_t>(args)...);
+    tmp->next = _head;
+    _head = tmp;
+    if (!_tail) _tail = _head;
+  }
 
-  _ARGS_TEMPL(args_t)
-  void emplace(iterator position, args_t &&...args);
+  //  _ARGS_TEMPL(args_t)
+  //  void emplace(iterator position, args_t &&...args);
 
   std::size_t size() const noexcept { return _size; }
   bool empty() const noexcept { return !!_size; }
@@ -106,6 +132,7 @@ class list {
 
   void clear() noexcept {
     for (auto it = _head; it != nullptr;) {
+      if (std::is_destructible<T>::value) it->value.~T();
       auto tmp = it->next;
       delete it;
       it = tmp;
@@ -116,6 +143,18 @@ class list {
 
  private:
   struct _node {
+    explicit _node(const T &arg_value) noexcept
+        : value(arg_value), next(nullptr), prev(nullptr) {}
+
+    explicit _node(T &&arg_value) noexcept
+        : value(std::move(arg_value)), next(nullptr), prev(nullptr) {}
+
+    _ARGS_TEMPL(args_t)
+    explicit _node(args_t &&...args) noexcept
+        : value(T(std::forward<args_t>(args)...)),
+          next(nullptr),
+          prev(nullptr) {}
+
     T value;
     _node *next;
     _node *prev;
@@ -152,9 +191,10 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
   }
 
  private:
-  explicit list_iterator(list<T>::_node *ptr) noexcept : _pointer(ptr) {}
-  list<T>::_node *_pointer;
+  explicit list_iterator(typename list<T>::_node *ptr) noexcept
+      : _pointer(ptr) {}
+  typename list<T>::_node *_pointer;
 };
 
-#undef _ARGS_TEMPL;
-#endif  // STACK_LIST_HPP
+#undef _ARGS_TEMPL
+#endif  // INCLUDE_LIST_HPP_

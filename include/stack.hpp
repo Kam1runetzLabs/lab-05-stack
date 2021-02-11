@@ -1,40 +1,37 @@
-// Copyright 2020 Your Name <your_email>
+// Copyright 2021 Your Name <your_email>
 
 #ifndef INCLUDE_HEADER_HPP_
 #define INCLUDE_HEADER_HPP_
 
-#include <list>
+#include <list.hpp>
 
-template <typename T, typename Container = std::list<T>>
+template <typename T, typename Container = list<T>>
 class stack {
  public:
   stack() : _container(){};
+
   stack(const stack &) = delete;
+
   stack(stack &&other) noexcept { _container = std::move(other._container); }
+
   ~stack() = default;
 
   stack &operator=(const stack &) = delete;
+
   stack &operator=(stack &&other) noexcept {
     _container = std::move(other._container);
   }
 
-  void push(T &&value) { _container.push_back(std::forward<T>(value)); }
+  void push(T &&value) { _container.push_back(std::move(value)); }
 
   template <typename... args_t>
   void emplace(args_t &&...args) {
     return _container.emplace_back(std::forward<args_t>(args)...);
   }
 
-  T pop() noexcept {
-    T ret = _container.back();
-    _container.pop_back();
-    return ret;
-  }
+  void pop() noexcept { _container.pop_back(); }
 
-  T top() const noexcept {
-    T ret = _container.back();
-    return ret;
-  }
+  T top() const noexcept { return _container.back(); }
 
   std::size_t size() const noexcept { return _container.size(); }
 

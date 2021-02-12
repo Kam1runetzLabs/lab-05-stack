@@ -18,12 +18,11 @@ class list {
 
  public:
   typedef list_iterator<T> iterator;
-  typedef list_iterator<const T> const_iterator;
 
   list() : _head(nullptr), _tail(nullptr), _size(0){};
 
-  list(const list &other) {
-    for (auto it = other.cbegin(); it != other.cend(); ++it) push_back(*it);
+  explicit list(const list &other) {
+    // todo
   }
 
   list(list &&other) noexcept {
@@ -39,7 +38,7 @@ class list {
   list &operator=(const list &other) {
     if (other == *this) return *this;
     if (_head) clear();
-    for (auto it = other.cbegin(); it != other.cend(); ++it) push_back(*it);
+    // todo
     return *this;
   }
 
@@ -125,13 +124,6 @@ class list {
   iterator begin() noexcept { return iterator(_head); }
   iterator end() noexcept {
     return _tail == nullptr ? iterator(_tail) : iterator(_tail->next);
-  }
-
-  const_iterator cbegin() const noexcept { return const_iterator(_head); }
-
-  const_iterator cend() const noexcept {
-    return _tail == nullptr ? const_iterator(_tail)
-                            : const_iterator(_tail->next);
   }
 
   void clear() noexcept {

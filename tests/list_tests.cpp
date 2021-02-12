@@ -49,6 +49,18 @@ TEST(DefaultMethodsTest, MovingAssign) {
   EXPECT_TRUE(std::is_move_assignable<list<int>>::value);
 }
 
+TEST(DefaultMethodsTest, CopyingAssign) {
+  list<int> lst1;
+  for (int i = 0; i != 10; ++i) lst1.push_back(i);
+
+  list<int> lst2;
+  lst2 = lst1;
+  EXPECT_EQ(lst1.size(), lst2.size());
+
+  for (int i = 0; i != 10; ++i) EXPECT_EQ(lst1[i], lst2[i]);
+}
+
+
 TEST(InsertMethodsTest, PushBackMethodTest_lvalue) {
   list<int> lst;
   for (int i = 0; i != 10; ++i) lst.push_back(i);

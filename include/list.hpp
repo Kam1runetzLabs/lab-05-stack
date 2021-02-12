@@ -6,23 +6,28 @@
 #define _ARGS_TEMPL(args_type_name) template <typename... args_type_name>
 
 #include <cassert>
+#include <iostream>
 #include <iterator>
 #include <type_traits>
 
-template <typename T>
+template <typename T, typename PointerType>
 class list_iterator;
 
 template <typename T>
 class list {
-  friend class list_iterator<T>;
+  struct _node;
+  friend class list_iterator<T, typename list<T>::_node>;
+  friend class list_iterator<T, const typename list<T>::_node>;
 
  public:
-  typedef list_iterator<T> iterator;
+  typedef list_iterator<T, typename list<T>::_node> iterator;
+  typedef list_iterator<T, const typename list<T>::_node> const_iterator;
 
   list() : _head(nullptr), _tail(nullptr), _size(0){};
 
-  explicit list(const list &other) {
-    // todo
+  explicit list(const list &other) : _head(nullptr), _tail(nullptr), _size(0) {
+    for (auto it = other.cbegin(); it != other.cend(); ++it)
+      push_back(it.get());
   }
 
   list(list &&other) noexcept {
@@ -36,9 +41,10 @@ class list {
   }
 
   list &operator=(const list &other) {
-    if (other == *this) return *this;
+    if (&other == this) return *this;
     if (_head) clear();
-    // todo
+    for (auto it = other.cbegin(); it != other.cend(); ++it)
+      push_back(it.get());
     return *this;
   }
 
@@ -58,7 +64,7 @@ class list {
 
   T operator[](std::size_t index) const noexcept {
     assert(index < _size);
-    return *(begin() + index);
+    return (cbegin() + index).get();
   }
 
   T &front() noexcept { return *begin(); }
@@ -125,6 +131,11 @@ class list {
   iterator end() noexcept {
     return _tail == nullptr ? iterator(_tail) : iterator(_tail->next);
   }
+  const_iterator cbegin() const noexcept { return const_iterator(_head); }
+  const_iterator cend() const noexcept {
+    return _tail == nullptr ? const_iterator(_tail)
+                            : const_iterator(_tail->next);
+  }
 
   void clear() noexcept {
     for (auto it = _head; it != nullptr;) {
@@ -183,7 +194,7 @@ class list {
   std::size_t _size;
 };
 
-template <typename T>
+template <typename T, typename PointerType>
 class list_iterator : public std::iterator<std::input_iterator_tag, T> {
   friend class list<T>;
 
@@ -200,6 +211,9 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
   }
 
   T &operator*() const noexcept { return _pointer->value; }
+
+  T get() const { return _pointer->value; }
+
   list_iterator &operator++() noexcept {
     _pointer = _pointer->next;
     return *this;
@@ -218,9 +232,8 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
   }
 
  private:
-  explicit list_iterator(typename list<T>::_node *ptr) noexcept
-      : _pointer(ptr) {}
-  typename list<T>::_node *_pointer;
+  explicit list_iterator(PointerType *ptr) noexcept : _pointer(ptr) {}
+  PointerType *_pointer;
 };
 
 #undef _ARGS_TEMPL

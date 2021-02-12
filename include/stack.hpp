@@ -33,7 +33,9 @@ class stack {
 
   void pop() noexcept { _container.pop_back(); }
 
-  T &top()  noexcept { return _container.back(); }
+  T &top() noexcept { return _container.back(); }
+
+  T top() const noexcept { return _container.back(); }
 
   std::size_t size() const noexcept { return _container.size(); }
 

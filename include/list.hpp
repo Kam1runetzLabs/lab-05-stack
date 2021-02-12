@@ -18,10 +18,13 @@ class list {
 
  public:
   typedef list_iterator<T> iterator;
+  typedef list_iterator<const T> const_iterator;
 
   list() : _head(nullptr), _tail(nullptr), _size(0){};
 
-  list(const list &) = delete;
+  list(const list &other) {
+    for (auto it = other.cbegin(); it != other.cend(); ++it) push_back(*it);
+  }
 
   list(list &&other) noexcept {
     _head = std::move(other._head);
@@ -33,7 +36,13 @@ class list {
     if (_head) clear();
   }
 
-  list &operator=(const list &) = delete;
+  list &operator=(const list &other) {
+    if (other == *this) return *this;
+    if (_head) clear();
+    for (auto it = other.cbegin(); it != other.cend(); ++it) push_back(*it);
+    return *this;
+  }
+
   list &operator=(list &&other) noexcept {
     if (other == *this) return *this;
     if (_head) clear();
@@ -48,8 +57,15 @@ class list {
     return *(begin() + index);
   }
 
+  T operator[](std::size_t index) const noexcept {
+    assert(index < _size);
+    return *(begin() + index);
+  }
+
   T &front() noexcept { return *begin(); }
+  T front() const noexcept { return *begin(); }
   T &back() noexcept { return *(iterator(_tail)); }
+  T back() const noexcept { return *(iterator(_tail)); }
 
   void insert(iterator position, const T &value) {
     auto new_node = new _node(value);
@@ -109,6 +125,13 @@ class list {
   iterator begin() noexcept { return iterator(_head); }
   iterator end() noexcept {
     return _tail == nullptr ? iterator(_tail) : iterator(_tail->next);
+  }
+
+  const_iterator cbegin() const noexcept { return const_iterator(_head); }
+
+  const_iterator cend() const noexcept {
+    return _tail == nullptr ? const_iterator(_tail)
+                            : const_iterator(_tail->next);
   }
 
   void clear() noexcept {

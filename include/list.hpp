@@ -32,7 +32,7 @@ class list {
 
   list() : _head(nullptr), _tail(nullptr), _size(0){};
 
-  explicit list(const list &other) : _head(nullptr), _tail(nullptr), _size(0) {
+  list(const list &other) : _head(nullptr), _tail(nullptr), _size(0) {
     for (auto it = other.cbegin(); it != other.cend(); ++it)
       push_back(it.get());
   }

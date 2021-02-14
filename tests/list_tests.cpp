@@ -4,7 +4,6 @@
 
 #include <list.hpp>
 #include <type_traits>
-#include <vector>
 
 // class for test
 class coord_2d {
@@ -59,7 +58,6 @@ TEST(DefaultMethodsTest, CopyingAssign) {
 
   for (int i = 0; i != 10; ++i) EXPECT_EQ(lst1[i], lst2[i]);
 }
-
 
 TEST(InsertMethodsTest, PushBackMethodTest_lvalue) {
   list<int> lst;
@@ -146,6 +144,40 @@ TEST(InsertMethodsTest, EmplaceMethod) {
   lst.emplace(lst.begin() + 2, 123, 123);
   EXPECT_EQ(lst[2].x(), 123);
   EXPECT_EQ(lst[2].y(), 123);
+}
+
+TEST(DeleteMethodsTest, PopFront) {
+  list<int> lst;
+  for (int i = 0; i != 10; ++i) lst.push_back(i);
+  EXPECT_EQ(0, lst.front());
+  EXPECT_EQ(10, lst.size());
+  lst.pop_front();
+  EXPECT_EQ(1, lst.front());
+  EXPECT_EQ(9, lst.size());
+}
+
+TEST(DeleteMethodsTest, Remove) {
+  list<int> lst;
+  for (int i = 0; i != 10; ++i) lst.push_back(i);
+  for (const auto &num : lst) std::cout << num << " ";
+
+  EXPECT_EQ(2, lst[2]);
+  EXPECT_EQ(10, lst.size());
+
+  lst.remove(lst.begin() + 2);
+
+  EXPECT_EQ(3, lst[2]);
+  EXPECT_EQ(9, lst.size());
+}
+
+TEST(DeleteMethodsTest, PopBack) {
+  list<int> lst;
+  for (int i = 0; i != 10; ++i) lst.push_back(i);
+  EXPECT_EQ(9, lst.back());
+  EXPECT_EQ(10, lst.size());
+  lst.pop_back();
+  EXPECT_EQ(8, lst.back());
+  EXPECT_EQ(9, lst.size());
 }
 
 TEST(MiscTesting, FrontAndBackMethods) {

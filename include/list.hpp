@@ -1,12 +1,18 @@
 // Copyright 2021 Kam1runetzLabs <notsoserious2017@gmail.com>
 
+/*
+ * 1) const iterators and * operator for const iterator
+ * 2) прояснить вопросы по итераторам
+ * 3) переделать _tail на not-null
+ * 4) переписать с использованием allocator
+ * */
+
 #ifndef INCLUDE_LIST_HPP_
 #define INCLUDE_LIST_HPP_
 
 #define _ARGS_TEMPL(args_type_name) template <typename... args_type_name>
 
 #include <cassert>
-#include <iostream>
 #include <iterator>
 #include <type_traits>
 
@@ -15,6 +21,7 @@ class list_iterator;
 
 template <typename T>
 class list {
+ private:
   struct _node;
   friend class list_iterator<T, typename list<T>::_node>;
   friend class list_iterator<T, const typename list<T>::_node>;
@@ -69,8 +76,8 @@ class list {
 
   T &front() noexcept { return *begin(); }
   T front() const noexcept { return *begin(); }
-  T &back() noexcept { return *(iterator(_tail)); }
-  T back() const noexcept { return *(iterator(_tail)); }
+  T &back() noexcept { return _tail->value; }
+  T back() const noexcept { return _tail->value; }
 
   void insert(iterator position, const T &value) {
     auto new_node = new _node(value);
@@ -96,22 +103,17 @@ class list {
 
   void pop_back() noexcept {
     assert(_tail != nullptr);
-    --_size;
-    auto tmp = _tail;
-    _tail = _tail->prev;
-    _tail->next = nullptr;
-    if (std::is_destructible<T>::value) tmp->value.~T();
-    delete tmp;
+    _delete_node(end());
   }
 
   void pop_front() noexcept {
     assert(_head != nullptr);
-    --_size;
-    auto tmp = _head;
-    _head = _head->next;
-    _head->prev = nullptr;
-    if (std::is_destructible<T>::value) tmp->value.~T();
-    delete tmp;
+    _delete_node(begin());
+  }
+
+  void remove(iterator position) noexcept {
+    assert(position._pointer != nullptr || position == end());
+    _delete_node(position);
   }
 
   _ARGS_TEMPL(args_t)
@@ -185,6 +187,28 @@ class list {
       new_node->next = position._pointer;
       new_node->prev->next = new_node;
       position._pointer = new_node;
+    }
+  }
+
+  inline void _delete_node(iterator position) {
+    --_size;
+    if (position == begin()) {
+      auto tmp = _head;
+      _head = _head->next;
+      _head->prev = nullptr;
+      if (std::is_destructible<T>::value) tmp->value.~T();
+      delete tmp;
+    } else if (position == end()) {
+      auto tmp = _tail;
+      _tail = _tail->prev;
+      _tail->next = nullptr;
+      if (std::is_destructible<T>::value) tmp->value.~T();
+      delete tmp;
+    } else {
+      auto tmp = position._pointer;
+      tmp->prev->next = tmp->next;
+      tmp->next->prev = tmp->prev;
+      delete tmp;
     }
   }
 

@@ -159,7 +159,6 @@ TEST(DeleteMethodsTest, PopFront) {
 TEST(DeleteMethodsTest, Remove) {
   list<int> lst;
   for (int i = 0; i != 10; ++i) lst.push_back(i);
-  for (const auto &num : lst) std::cout << num << " ";
 
   EXPECT_EQ(2, lst[2]);
   EXPECT_EQ(10, lst.size());

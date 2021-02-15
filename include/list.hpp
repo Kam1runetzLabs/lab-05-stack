@@ -234,7 +234,7 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
     return _pointer != other._pointer;
   }
 
-  T &operator*() const noexcept { return _pointer->value; }
+  T &operator*() noexcept { return _pointer->value; }
 
   T get() const { return _pointer->value; }
 

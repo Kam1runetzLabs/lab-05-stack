@@ -46,11 +46,9 @@ target_link_libraries(demo ${PROJECT_NAME})
 
 if (BUILD_TESTS)
     add_executable(list_tests
-            ${CMAKE_CURRENT_SOURCE_DIR}/tests/stack_tests.cpp
-            tests/list_tests.cpp)
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/list_tests.cpp)
     add_executable(stack_tests
-            ${CMAKE_CURRENT_SOURCE_DIR}/tests/stack_tests.cpp
-            tests/stack_tests.cpp)
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/stack_tests.cpp)
     target_link_libraries(list_tests ${PROJECT_NAME} GTest::gtest_main)
     target_link_libraries(stack_tests ${PROJECT_NAME} GTest::gtest_main)
     enable_testing()

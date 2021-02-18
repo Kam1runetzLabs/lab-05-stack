@@ -27,10 +27,10 @@ class list {
     for (auto it = other.begin(); it != other.end(); ++it) push_back(*it);
   }
 
-  list(list &&other) noexcept {
-    _head = std::move(other._head);
-    _tail = std::move(other._tail);
-    _size = std::move(other._size);
+  list(list &&other) noexcept : _head(nullptr), _tail(nullptr), _size(0) {
+    std::swap(_head, other._head);
+    std::swap(_tail, other._tail);
+    std::swap(_size, other._size);
   }
 
   ~list() {
@@ -47,9 +47,9 @@ class list {
   list &operator=(list &&other) noexcept {
     if (other == *this) return *this;
     if (_head) clear();
-    _head = std::move(other._head);
-    _tail = std::move(other._tail);
-    _size = std::move(other._size);
+    std::swap(_head, other._head);
+    std::swap(_tail, other._tail);
+    std::swap(_size, other._size);
     return *this;
   }
 

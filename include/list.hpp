@@ -24,8 +24,7 @@ class list {
   list() : _head(nullptr), _tail(nullptr), _size(0){};
 
   list(const list &other) : _head(nullptr), _tail(nullptr), _size(0) {
-    for (const auto it = other.begin(); it != other.end(); ++it)
-      push_back(*it);
+    for (const auto it = other.begin(); it != other.end(); ++it) push_back(*it);
   }
 
   list(list &&other) noexcept : _head(nullptr), _tail(nullptr), _size(0) {
@@ -41,13 +40,12 @@ class list {
   list &operator=(const list &other) {
     if (&other == this) return *this;
     if (_head) clear();
-    for (const auto it = other.begin(); it != other.end(); ++it)
-      push_back(*it);
+    for (const auto it = other.begin(); it != other.end(); ++it) push_back(*it);
     return *this;
   }
 
   list &operator=(list &&other) noexcept {
-    if (other == *this) return *this;
+    if (&other == this) return *this;
     if (_head) clear();
     std::swap(_head, other._head);
     std::swap(_tail, other._tail);

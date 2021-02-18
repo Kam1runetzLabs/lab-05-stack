@@ -42,10 +42,25 @@ TEST(DefaultMethodsTest, CopyingConstructor) {
 
 TEST(DefaultMethodsTest, MovingConstructor) {
   EXPECT_TRUE(std::is_move_constructible<list<int>>::value);
+  list<int> lst;
+  for (int i = 0; i != 10; ++i) lst.push_back(i);
+  auto saved_size = lst.size();
+  list<int> lst2(std::move(lst));
+  EXPECT_EQ(lst2.size(), saved_size);
+  EXPECT_TRUE(lst.empty());
+  for (int i = 0; i != 10; ++i) EXPECT_EQ(lst2[i], i);
 }
 
 TEST(DefaultMethodsTest, MovingAssign) {
   EXPECT_TRUE(std::is_move_assignable<list<int>>::value);
+  list<int> lst;
+  for (int i = 0; i != 10; ++i) lst.push_back(i);
+  auto saved_size = lst.size();
+  list<int> lst2;
+  lst2 = std::move(lst);
+  EXPECT_EQ(lst2.size(), saved_size);
+  EXPECT_TRUE(lst.empty());
+  for (int i = 0; i != 10; ++i) EXPECT_EQ(lst2[i], i);
 }
 
 TEST(DefaultMethodsTest, CopyingAssign) {

@@ -107,9 +107,7 @@ TEST(InsertMethodsTest, InsertMethodTest_lvalue) {
 
 TEST(InsertMethodsTest, InsertMethodTest_rvalue) {
   list<coord_2d> lst;
-  for (int i = 0; i != 10; ++i) {
-    lst.emplace_back(i, 2 * i);
-  }
+  for (int i = 0; i != 10; ++i) lst.emplace_back(i, 2 * i);
 
   coord_2d coord(1234, 123);
   lst.insert(lst.begin() + 2, std::move(coord));

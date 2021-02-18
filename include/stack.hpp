@@ -10,7 +10,7 @@ class stack {
  public:
   stack() : _container(){};
 
-  stack(const stack &) = delete;
+  stack(const stack &other) = delete;
 
   stack(stack &&other) noexcept { _container = std::move(other._container); }
 

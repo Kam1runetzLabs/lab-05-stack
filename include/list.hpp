@@ -24,7 +24,8 @@ class list {
   list() : _head(nullptr), _tail(nullptr), _size(0){};
 
   list(const list &other) : _head(nullptr), _tail(nullptr), _size(0) {
-    for (auto it = other.begin(); it != other.end(); ++it) push_back(*it);
+    for (const auto it = other.begin(); it != other.end(); ++it)
+      push_back(*it);
   }
 
   list(list &&other) noexcept : _head(nullptr), _tail(nullptr), _size(0) {
@@ -40,7 +41,8 @@ class list {
   list &operator=(const list &other) {
     if (&other == this) return *this;
     if (_head) clear();
-    for (auto it = other.begin(); it != other.end(); ++it) push_back(*it);
+    for (const auto it = other.begin(); it != other.end(); ++it)
+      push_back(*it);
     return *this;
   }
 
@@ -58,15 +60,15 @@ class list {
     return *(begin() + index);
   }
 
-  T operator[](std::size_t index) const noexcept {
+  const T &operator[](std::size_t index) const noexcept {
     assert(index < _size);
     return *(begin() + index);
   }
 
   T &front() noexcept { return *begin(); }
-  T front() const noexcept { return *begin(); }
+  const T &front() const noexcept { return *begin(); }
   T &back() noexcept { return _tail->value; }
-  T back() const noexcept { return _tail->value; }
+  const T &back() const noexcept { return _tail->value; }
 
   void insert(iterator position, const T &value) {
     auto new_node = new _node(value);
@@ -223,9 +225,14 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
   }
 
   T &operator*() noexcept { return _pointer->value; }
-  T operator*() const noexcept { return _pointer->value; }
+  const T &operator*() const noexcept { return _pointer->value; }
 
   list_iterator &operator++() noexcept {
+    _pointer = _pointer->next;
+    return *this;
+  }
+
+  const list_iterator &operator++() const noexcept {
     _pointer = _pointer->next;
     return *this;
   }
@@ -235,7 +242,12 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
     return *this;
   }
 
-  list_iterator operator+(std::size_t number) noexcept {
+  const list_iterator &operator--() const noexcept {
+    _pointer = _pointer->prev;
+    return *this;
+  }
+
+  list_iterator operator+(std::size_t number) const noexcept {
     auto res = list_iterator(*this);
     for (std::size_t i = 0; i != number; ++i) ++res;
     return res;
@@ -244,7 +256,7 @@ class list_iterator : public std::iterator<std::input_iterator_tag, T> {
  private:
   explicit list_iterator(typename list<T>::_node *ptr) noexcept
       : _pointer(ptr) {}
-  typename list<T>::_node *_pointer;
+  mutable typename list<T>::_node *_pointer;
 };
 
 #undef _ARGS_TEMPL
